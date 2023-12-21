@@ -2,7 +2,9 @@ package com.workintech.controller;
 
 import com.workintech.dto.AccountResponse;
 import com.workintech.entity.Account;
+import com.workintech.entity.Customer;
 import com.workintech.service.AccountService;
+import com.workintech.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +14,16 @@ import java.util.List;
 @RequestMapping("/accounts")
 public class AccountController {
     private final AccountService accountService;
-
+    private final CustomerService customerService;
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, CustomerService customerService) {
         this.accountService = accountService;
+        this.customerService = customerService;
     }
-    @PostMapping
-    public AccountResponse save(@RequestBody Account account){
+    @PostMapping("/{customerId}")
+    public AccountResponse save(@PathVariable Long customerId, @RequestBody Account account){
+        Customer customer = customerService.findById(customerId);
+        account.setCustomer(customer);
         return accountService.save(account);
     }
 
